@@ -1,0 +1,17 @@
+.venv/
+
+# Cachés de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Config de IDE
+.vscode/
+.idea/
+
+# Archivos de entorno / secretos
+.env
+
+# Otros
+*.log
