@@ -1,5 +1,6 @@
-# app/main.py
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
 from .models import Base
 from .database import engine
 from .routes import (
@@ -14,7 +15,9 @@ from .routes import (
 
 app = FastAPI(title="API Taller de Latonería y Pintura")
 
-# Incluir routers
+app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
+
+
 app.include_router(usuarios.router)
 app.include_router(administradores.router)
 app.include_router(clientes.router)
@@ -31,7 +34,6 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-# Crear tablas al inicio (opcional, útil en desarrollo / Render sin Alembic)
 @app.on_event("startup")
 async def create_tables():
     async with engine.begin() as conn:
