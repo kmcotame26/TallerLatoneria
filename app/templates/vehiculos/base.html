@@ -1,10 +1,15 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{% block title %}Taller{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-
+    {% include 'sidebar.html' %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
