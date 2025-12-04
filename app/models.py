@@ -42,7 +42,6 @@ class Cliente(Base):
     facturas = relationship("Factura", back_populates="cliente", cascade="all, delete-orphan")
 
 
-# ===== VEHÍCULOS =====
 class Vehiculo(Base):
     __tablename__ = "vehiculos"
 

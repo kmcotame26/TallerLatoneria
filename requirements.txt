@@ -42,6 +42,5 @@ starlette==0.38.6
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.30.6
-uvloop==0.21.0
 watchfiles==1.1.0
 websockets==15.0.1

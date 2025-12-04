@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+# app/main.py
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from .models import Base
@@ -12,12 +14,26 @@ from .routes import (
     facturas,
     taller as taller_routes,
 )
-
+templates = Jinja2Templates(directory="app/templates")
 app = FastAPI(title="API Taller de Latonería y Pintura")
 
-app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
+# Templates & Static
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Rutas HTML
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/vehiculos/crear")
+async def vehiculo_form(request: Request):
+    return templates.TemplateResponse("vehiculos/crear.html", {"request": request})
+
+@app.get("/vehiculos/listar")
+async def vehiculos_listado(request: Request):
+    return templates.TemplateResponse("vehiculos/listar.html", {"request": request})
+
+# Routers API
 app.include_router(usuarios.router)
 app.include_router(administradores.router)
 app.include_router(clientes.router)
@@ -26,14 +42,12 @@ app.include_router(trabajos.router)
 app.include_router(facturas.router)
 app.include_router(taller_routes.router)
 
-@app.get("/")
-async def root():
-    return {"mensaje": "API Taller funcionando"}
-
+# Health
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
+# Crear tablas
 @app.on_event("startup")
 async def create_tables():
     async with engine.begin() as conn:
