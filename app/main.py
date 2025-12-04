@@ -14,13 +14,11 @@ from .routes import (
     facturas,
     taller as taller_routes,
 )
+app = FastAPI()
+
 templates = Jinja2Templates(directory="app/templates")
-app = FastAPI(title="API Taller de Latonería y Pintura")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Templates & Static
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Rutas HTML
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -32,6 +30,7 @@ async def vehiculo_form(request: Request):
 @app.get("/vehiculos/listar")
 async def vehiculos_listado(request: Request):
     return templates.TemplateResponse("vehiculos/listar.html", {"request": request})
+
 
 # Routers API
 app.include_router(usuarios.router)
