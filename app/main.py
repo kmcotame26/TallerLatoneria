@@ -1,62 +1,33 @@
-from fastapi import FastAPI, Request
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 
-from .models import Base
-from .database import engine
-from .routes import (
-    usuarios,
-    administradores,
-    clientes,
-    vehiculos,
-    trabajos,
-    facturas,
-    taller as taller_routes,
-)
+from starlette.requests import Request
+from fastapi.responses import HTMLResponse
 
-app = FastAPI(title="API Taller de Latonería y Pintura")
+# Routers
+from app.routes import vehiculos, clientes, usuarios, administradores, facturas, trabajos
 
-BASE_DIR = Path(__file__).resolve().parent
+app = FastAPI()
 
-# Templates & Static
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+# STATIC para Render
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-static_path = BASE_DIR / "static"
-if not static_path.exists():
-    # try project-level static
-    static_path = Path(__file__).resolve().parents[1] / "static"
-app.mount("/static", StaticFiles(directory=static_path), name="static")
+# templates Jinja2
+templates = Jinja2Templates(directory="app/templates")
 
-# HTML routes
-@app.get("/", response_class=None)
+
+# ---------- RUTAS DE INICIO ----------
+@app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/vehiculos/crear")
-async def vehiculo_form(request: Request):
-    return templates.TemplateResponse("vehiculos/crear.html", {"request": request})
 
-@app.get("/vehiculos/listar")
-async def vehiculos_listado(request: Request):
-    return templates.TemplateResponse("vehiculos/index.html", {"request": request})
-
-# Routers API
-app.include_router(usuarios.router)
-app.include_router(administradores.router)
-app.include_router(clientes.router)
-app.include_router(vehiculos.router)
-app.include_router(trabajos.router)
-app.include_router(facturas.router)
-app.include_router(taller_routes.router)
-
-# Health
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
-
-# Crear tablas
-@app.on_event("startup")
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# ---------- INCLUIR ROUTERS ----------
+app.include_router(vehiculos.router, prefix="/vehiculos")
+app.include_router(clientes.router, prefix="/clientes")
+app.include_router(usuarios.router, prefix="/usuarios")
+app.include_router(administradores.router, prefix="/administradores")
+app.include_router(facturas.router, prefix="/facturas")
+app.include_router(trabajos.router, prefix="/trabajos")
