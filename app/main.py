@@ -1,10 +1,10 @@
-# app/main.py
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from .models import Base
 from .database import engine
+from pathlib import Path
 from .routes import (
     usuarios,
     administradores,
@@ -16,7 +16,10 @@ from .routes import (
 )
 app = FastAPI()
 
-templates = Jinja2Templates(directory="app/templates")
+
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
 
 BASE_DIR = Path(__file__).resolve().parent
 static_path = BASE_DIR / "static"
