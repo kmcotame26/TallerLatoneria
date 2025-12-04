@@ -44,4 +44,694 @@
     <span></span>
     <span></span>
     <span></span>
-</button>
+</button>{% extends "vehiculos/base.html" %}
+
+{% block title %}Gestión de Vehículos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="header-content">
+        <h1>🚗 Inventario de Vehículos</h1>
+        <p class="text-muted">Gestiona la flota de vehículos registrados en el taller.</p>
+    </div>
+    <div class="header-actions">
+        <a href="/vehiculos/create" class="btn btn-primary">+ Nuevo Vehículo</a>
+    </div>
+</div>
+
+<!-- Barra de Herramientas (Búsqueda y Filtros) -->
+<div class="toolbar">
+    <div class="search-box">
+        <input type="text" placeholder="Buscar por placa, marca o cliente..." class="form-control search-input">
+        <button class="btn btn-secondary">Buscar</button>
+    </div>
+</div>
+
+<!-- Contenedor de Tabla -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Marca / Modelo</th>
+            <th>Color</th>
+            <th>Año</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="vehiculos-body">
+        <!-- Ejemplo de fila (Esto se debería llenar dinámicamente con Jinja o JS) -->
+        <!-- Si estás usando Jinja pasando una variable 'vehiculos': -->
+        {% if vehiculos %}
+        {% for v in vehiculos %}
+        <tr>
+            <td>#{{ v.id_vehiculo }}</td>
+            <td><span class="badge badge-placa">{{ v.placa }}</span></td>
+            <td>
+                <div class="vehicle-info">
+                    <strong>{{ v.marca }}</strong>
+                    <small>{{ v.modelo }}</small>
+                </div>
+            </td>
+            <td>
+                <span class="color-dot" style="background-color: {{ v.color|default('#ccc') }};"></span>
+                {{ v.color }}
+            </td>
+            <td>{{ v.anio }}</td>
+            <td class="text-center actions-cell">
+                <a href="/vehiculos/{{ v.id_vehiculo }}" class="btn-icon" title="Ver Detalles">👁️</a>
+                <a href="/vehiculos/update?id={{ v.id_vehiculo }}" class="btn-icon edit" title="Editar">✏️</a>
+                <button onclick="deleteVehiculo({{ v.id_vehiculo }})" class="btn-icon delete" title="Eliminar">🗑️</button>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="6" class="empty-state">
+                No hay vehículos registrados. <a href="/vehiculos/create">¡Registra el primero!</a>
+            </td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Script simple para manejar eliminación (ejemplo)
+    async function deleteVehiculo(id) {
+        if(confirm('¿Estás seguro de eliminar este vehículo?')) {
+            try {
+                const response = await fetch(`/vehiculos/${id}`, { method: 'DELETE' });
+                if(response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Error al eliminar');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error de conexión');
+            }
+        }
+    }
+</script>
+{% endblock %}<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Taller App{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* --- Estilos Base Modernos (Incrustados para efecto inmediato) --- */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f8f9fa;
+            --text-dark: #343a40;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            color: var(--text-dark);
+            /* Padding left para dejar espacio al sidebar cuando se abra, o usar layout flex */
+            padding-left: 0;
+            transition: padding-left 0.3s;
+        }
+
+        /* Layout Principal */
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 60px; /* Espacio para el botón hamburguesa */
+        }
+
+        /* Encabezados de Página */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .page-header h1 { margin: 0; font-size: 1.8rem; color: #2c3e50; }
+        .text-muted { color: #6c757d; font-size: 0.9rem; margin-top: 5px; }
+
+        /* Botones Generales */
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #0056b3; }
+
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+
+        /* Tablas Modernas */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background-color: #f8f9fa; }
+
+        /* Elementos UI */
+        .badge {
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            border-radius: 0.25rem;
+            display: inline-block;
+        }
+        .badge-placa { background-color: #e9ecef; color: #333; border: 1px solid #ced4da; letter-spacing: 1px;}
+
+        .vehicle-info { display: flex; flex-direction: column; }
+        .vehicle-info small { color: #888; }
+
+        .color-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Formularios y Búsqueda */
+        .toolbar { margin-bottom: 1.5rem; }
+        .search-box { display: flex; gap: 10px; max-width: 500px; }
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        /* Acciones en tabla */
+        .actions-cell { white-space: nowrap; }
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            margin: 0 2px;
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .btn-icon:hover { opacity: 1; transform: scale(1.1); }
+        .btn-icon.delete:hover { filter: drop-shadow(0 0 2px red); }
+
+        .empty-state { text-align: center; padding: 3rem !important; color: #888; }
+
+        /* Integración con Sidebar */
+        body.sidebar-open { padding-left: 280px; }
+        @media (max-width: 768px) {
+            body.sidebar-open { padding-left: 0; } /* En móvil el sidebar es overlay */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Incluimos el Sidebar Global -->
+{% include 'vehiculos/sidebar.html' %}
+
+<!-- Contenido Principal -->
+<div class="main-content" id="main-content">
+    {% block content %}
+    <!-- Aquí se inyectará el contenido de index.html, create.html, etc. -->
+    {% endblock %}
+</div>
+
+<!-- Scripts Globales -->
+<script>
+    // Función auxiliar para conectar la apertura del sidebar con el layout
+    const originalToggleSidebar = window.toggleSidebar;
+    window.toggleSidebar = function() {
+        // Llamar a la función original definida en sidebar.html o index principal
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const body = document.body;
+
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        body.classList.toggle('sidebar-open'); // Esto mueve el contenido principal
+    };
+</script>
+</body>
+</html><div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h3>Menu Principal</h3>
+        <span class="close-btn" onclick="toggleSidebar()">&times;</span>
+    </div>
+
+    <div class="sidebar-content">
+        <!-- Sección Inicio -->
+        <a href="/" class="sidebar-link">🏠 Inicio</a>
+
+        <!-- Sección Vehículos -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                🚗 Vehículos <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/vehiculos">Ver Lista</a>
+                <a href="/vehiculos/create">Registrar Nuevo</a>
+                <a href="/vehiculos/update">Actualizar Datos</a>
+            </div>
+        </div>
+
+        <!-- Sección Clientes -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                👥 Clientes <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/clientes">Ver Clientes</a>
+                <a href="/clientes/create">Nuevo Cliente</a>
+            </div>
+        </div>
+
+        <!-- Sección Trabajos / Taller -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                🛠️ Taller & Trabajos <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/trabajos">Ver Trabajos</a>
+                <a href="/facturas">Facturación</a>
+                <a href="/historial">Historial</a>
+            </div>
+        </div>
+
+        <hr class="sidebar-divider">
+
+        <!-- Sección Información -->
+        <a href="/informacion" class="sidebar-link">ℹ️ Información</a>
+    </div>
+</div>
+
+<!-- Botón flotante para abrir (visible en móviles o cuando no hay navbar) -->
+<button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+
+<style>
+    /* Estilos Mejorados del Sidebar */
+    .sidebar {
+        height: 100%;
+        width: 0; /* Cerrado por defecto */
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        background-color: #2c3e50; /* Color oscuro elegante */
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding-top: 0;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open {
+        width: 280px;
+    }
+
+    .sidebar-header {
+        background-color: #1a252f;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+    }
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        cursor: pointer;
+        color: #aaa;
+        line-height: 0.8;
+    }
+    .close-btn:hover { color: white; }
+
+    .sidebar-content {
+        padding: 10px 0;
+    }
+
+    /* Enlaces y Botones */
+    .sidebar-link, .dropdown-btn {
+        padding: 15px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #ecf0f1;
+        display: block;
+        transition: 0.2s;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .sidebar-link:hover, .dropdown-btn:hover {
+        background-color: #34495e;
+        color: white;
+    }
+
+    /* Submenús */
+    .dropdown-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .arrow { font-size: 0.8rem; }
+
+    .submenu-content {
+        max-height: 0;
+        overflow: hidden;
+        background-color: #202d3a; /* Ligeramente más oscuro */
+        transition: max-height 0.3s ease-out;
+    }
+
+    .submenu-content a {
+        padding: 12px 20px 12px 35px; /* Indentación */
+        text-decoration: none;
+        font-size: 15px;
+        color: #bdc3c7;
+        display: block;
+        transition: 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .submenu-content a:hover {
+        color: white;
+        background-color: #2c3e50;
+        border-left: 3px solid #3498db;
+    }
+
+    .sidebar-divider {
+        border: 0;
+        height: 1px;
+        background: #3e5871;
+        margin: 10px 20px;
+    }
+
+    /* Botón Hamburguesa */
+    .hamburger-btn {
+        font-size: 24px;
+        cursor: pointer;
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 900;
+        transition: 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .hamburger-btn:hover { background-color: #34495e; }
+
+    /* Overlay para oscurecer el fondo */
+    #sidebar-overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 950;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    #sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+</style>
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h3>Menu Principal</h3>
+        <span class="close-btn" onclick="toggleSidebar()">&times;</span>
+    </div>
+
+    <div class="sidebar-content">
+        <!-- Sección Inicio -->
+        <a href="/" class="sidebar-link">🏠 Inicio</a>
+
+        <!-- Sección Vehículos -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                🚗 Vehículos <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/vehiculos">Ver Lista</a>
+                <a href="/vehiculos/create">Registrar Nuevo</a>
+                <a href="/vehiculos/update">Actualizar Datos</a>
+            </div>
+        </div>
+
+        <!-- Sección Clientes -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                👥 Clientes <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/clientes">Ver Clientes</a>
+                <a href="/clientes/create">Nuevo Cliente</a>
+            </div>
+        </div>
+
+        <!-- Sección Trabajos / Taller -->
+        <div class="sidebar-section">
+            <button class="dropdown-btn" onclick="toggleSubmenu(this)">
+                🛠️ Taller & Trabajos <span class="arrow">&#9662;</span>
+            </button>
+            <div class="submenu-content">
+                <a href="/trabajos">Ver Trabajos</a>
+                <a href="/facturas">Facturación</a>
+                <a href="/historial">Historial</a>
+            </div>
+        </div>
+
+        <hr class="sidebar-divider">
+
+        <!-- Sección Información -->
+        <a href="/informacion" class="sidebar-link">ℹ️ Información</a>
+    </div>
+</div>
+
+<!-- Botón flotante para abrir (visible en móviles o cuando no hay navbar) -->
+<button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+
+<style>
+    /* Estilos Mejorados del Sidebar */
+    .sidebar {
+        height: 100%;
+        width: 0; /* Cerrado por defecto */
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        background-color: #2c3e50; /* Color oscuro elegante */
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding-top: 0;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open {
+        width: 280px;
+    }
+
+    .sidebar-header {
+        background-color: #1a252f;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+    }
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .close-btn {
+        font-size: 2rem;
+        cursor: pointer;
+        color: #aaa;
+        line-height: 0.8;
+    }
+    .close-btn:hover { color: white; }
+
+    .sidebar-content {
+        padding: 10px 0;
+    }
+
+    /* Enlaces y Botones */
+    .sidebar-link, .dropdown-btn {
+        padding: 15px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #ecf0f1;
+        display: block;
+        transition: 0.2s;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .sidebar-link:hover, .dropdown-btn:hover {
+        background-color: #34495e;
+        color: white;
+    }
+
+    /* Submenús */
+    .dropdown-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .arrow { font-size: 0.8rem; }
+
+    .submenu-content {
+        max-height: 0;
+        overflow: hidden;
+        background-color: #202d3a; /* Ligeramente más oscuro */
+        transition: max-height 0.3s ease-out;
+    }
+
+    .submenu-content a {
+        padding: 12px 20px 12px 35px; /* Indentación */
+        text-decoration: none;
+        font-size: 15px;
+        color: #bdc3c7;
+        display: block;
+        transition: 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .submenu-content a:hover {
+        color: white;
+        background-color: #2c3e50;
+        border-left: 3px solid #3498db;
+    }
+
+    .sidebar-divider {
+        border: 0;
+        height: 1px;
+        background: #3e5871;
+        margin: 10px 20px;
+    }
+
+    /* Botón Hamburguesa */
+    .hamburger-btn {
+        font-size: 24px;
+        cursor: pointer;
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 900;
+        transition: 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .hamburger-btn:hover { background-color: #34495e; }
+
+    /* Overlay para oscurecer el fondo */
+    #sidebar-overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 950;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    #sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+</style>

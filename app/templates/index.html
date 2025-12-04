@@ -206,4 +206,189 @@
 
 <script>
     function toggleSidebar() {
+    // ... existing code ...<!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Inicio - Taller de Latonería</title>
+                    <link rel="stylesheet" href="/static/styles.css">
+                        <style>
+                            /* Estilos específicos para el Dashboard en el index */
+                            .hero-section {
+                            background-color: #f4f4f9;
+                            padding: 40px 20px;
+                            border-radius: 8px;
+                            text-align: center;
+                            margin-bottom: 30px;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                        }
+
+                            .hero-title {
+                            font-size: 2.5rem;
+                            color: #333;
+                            margin-bottom: 10px;
+                        }
+
+                            .search-form {
+                            max-width: 500px;
+                            margin: 20px auto;
+                            display: flex;
+                            gap: 10px;
+                        }
+
+                            .search-input {
+                            flex: 1;
+                            padding: 12px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 1rem;
+                        }
+
+                            .btn-search {
+                            padding: 12px 24px;
+                            background-color: #333;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-weight: bold;
+                        }
+
+                            .btn-search:hover {
+                            background-color: #555;
+                        }
+
+                            /* Grid de Tarjetas */
+                            .dashboard-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                            gap: 20px;
+                            margin-bottom: 40px;
+                        }
+
+                            .card {
+                            background: white;
+                            border: 1px solid #eee;
+                            border-radius: 8px;
+                            padding: 20px;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                        }
+
+                            .card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                        }
+
+                            .card h3 {
+                            color: #2c3e50;
+                            margin-top: 0;
+                        }
+
+                            .card p {
+                            color: #666;
+                            font-size: 0.95rem;
+                            margin-bottom: 20px;
+                        }
+
+                            .card-actions {
+                            display: flex;
+                            gap: 10px;
+                        }
+
+                            .btn-action {
+                            flex: 1;
+                            text-align: center;
+                            padding: 10px;
+                            text-decoration: none;
+                            border-radius: 4px;
+                            font-size: 0.9rem;
+                            font-weight: 500;
+                        }
+
+                            .btn-primary {
+                            background-color: #007bff;
+                            color: white;
+                        }
+
+                            .btn-primary:hover { background-color: #0056b3; }
+
+                            .btn-outline {
+                            border: 1px solid #007bff;
+                            color: #007bff;
+                        }
+
+                            .btn-outline:hover { background-color: #f0f8ff; }
+
+                            .info-footer {
+                            text-align: center;
+                            color: #888;
+                            font-size: 0.9rem;
+                            margin-top: 40px;
+                            border-top: 1px solid #eee;
+                            padding-top: 20px;
+                        }
+                        </style>
+        </head>
+        <body>
+
+        <!-- NAVBAR r -->
+        // ... existing code ...
+        {% include 'vehiculos/sidebar.html' %}
+
+        <div class="container">
+
+            <!-- Sección Hero con Buscador -->
+            <div class="hero-section">
+                <h1 class="hero-title">Sistema de Taller de Latonería</h1>
+                <p>Gestión eficiente de vehículos, clientes y reparaciones.</p>
+
+                <!-- Formulario Visual de Búsqueda Rápida -->
+                <form class="search-form" action="#" onsubmit="alert('Funcionalidad de búsqueda próximamente'); return false;">
+                    <input type="text" class="search-input" placeholder="Buscar por placa (ej. ABC-123) o cliente...">
+                        <button type="submit" class="btn-search">Buscar</button>
+                </form>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-grid">
+                <!-- Tarjeta Vehículos -->
+                <div class="card">
+                    <h3>🚗 Vehículos</h3>
+                    <p>Gestiona el inventario de autos en el taller. Registra ingresos y actualiza estados.</p>
+                    <div class="card-actions">
+                        <a href="/vehiculos" class="btn-action btn-outline">Ver lista</a>
+                        <a href="/vehiculos/create" class="btn-action btn-primary">Nuevo Auto</a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Clientes -->
+                <div class="card">
+                    <h3>👥 Clientes</h3>
+                    <p>Base de datos de propietarios. Contacto y asignación de vehículos.</p>
+                    <div class="card-actions">
+                        <a href="/clientes" class="btn-action btn-outline">Directorio</a>
+                        <a href="/clientes/create" class="btn-action btn-primary">Nuevo Cliente</a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Historial/Informes -->
+                <div class="card">
+                    <h3>📊 Historial</h3>
+                    <p>Consulta las reparaciones pasadas y el rendimiento del taller.</p>
+                    <div class="card-actions">
+                        <a href="/historial" class="btn-action btn-outline">Ver Historial</a>
+                        <a href="/informacion" class="btn-action btn-outline">Info</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-footer">
+                <p><strong>Desarrollo de Software</strong> &copy; 2024. Sistema de gestión interna v1.0.</p>
+            </div>
+        </div>
+
+        <script>
+            function toggleSidebar() {
     // ... existing code ...

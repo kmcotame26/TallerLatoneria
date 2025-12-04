@@ -13,3 +13,198 @@
     </main>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Taller App{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* --- Estilos Base Modernos (Incrustados para efecto inmediato) --- */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f8f9fa;
+            --text-dark: #343a40;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            color: var(--text-dark);
+            /* Padding left para dejar espacio al sidebar cuando se abra, o usar layout flex */
+            padding-left: 0;
+            transition: padding-left 0.3s;
+        }
+
+        /* Layout Principal */
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 60px; /* Espacio para el botón hamburguesa */
+        }
+
+        /* Encabezados de Página */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .page-header h1 { margin: 0; font-size: 1.8rem; color: #2c3e50; }
+        .text-muted { color: #6c757d; font-size: 0.9rem; margin-top: 5px; }
+
+        /* Botones Generales */
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #0056b3; }
+
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+
+        /* Tablas Modernas */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background-color: #f8f9fa; }
+
+        /* Elementos UI */
+        .badge {
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            border-radius: 0.25rem;
+            display: inline-block;
+        }
+        .badge-placa { background-color: #e9ecef; color: #333; border: 1px solid #ced4da; letter-spacing: 1px;}
+
+        .vehicle-info { display: flex; flex-direction: column; }
+        .vehicle-info small { color: #888; }
+
+        .color-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Formularios y Búsqueda */
+        .toolbar { margin-bottom: 1.5rem; }
+        .search-box { display: flex; gap: 10px; max-width: 500px; }
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        /* Acciones en tabla */
+        .actions-cell { white-space: nowrap; }
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            margin: 0 2px;
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .btn-icon:hover { opacity: 1; transform: scale(1.1); }
+        .btn-icon.delete:hover { filter: drop-shadow(0 0 2px red); }
+
+        .empty-state { text-align: center; padding: 3rem !important; color: #888; }
+
+        /* Integración con Sidebar */
+        body.sidebar-open { padding-left: 280px; }
+        @media (max-width: 768px) {
+            body.sidebar-open { padding-left: 0; } /* En móvil el sidebar es overlay */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Incluimos el Sidebar Global -->
+{% include 'vehiculos/sidebar.html' %}
+
+<!-- Contenido Principal -->
+<div class="main-content" id="main-content">
+    {% block content %}
+    <!-- Aquí se inyectará el contenido de index.html, create.html, etc. -->
+    {% endblock %}
+</div>
+
+<!-- Scripts Globales -->
+<script>
+    // Función auxiliar para conectar la apertura del sidebar con el layout
+    const originalToggleSidebar = window.toggleSidebar;
+    window.toggleSidebar = function() {
+        // Llamar a la función original definida en sidebar.html o index principal
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const body = document.body;
+
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        body.classList.toggle('sidebar-open'); // Esto mueve el contenido principal
+    };
+</script>
+</body>
+</html>

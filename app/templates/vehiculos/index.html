@@ -1,5 +1,96 @@
 <!DOCTYPE html>
-<html lang="es">
+{% extends "vehiculos/base.html" %}
+
+{% block title %}Gestión de Vehículos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="header-content">
+        <h1>🚗 Inventario de Vehículos</h1>
+        <p class="text-muted">Gestiona la flota de vehículos registrados en el taller.</p>
+    </div>
+    <div class="header-actions">
+        <a href="/vehiculos/create" class="btn btn-primary">+ Nuevo Vehículo</a>
+    </div>
+</div>
+
+<!-- Barra de Herramientas (Búsqueda y Filtros) -->
+<div class="toolbar">
+    <div class="search-box">
+        <input type="text" placeholder="Buscar por placa, marca o cliente..." class="form-control search-input">
+        <button class="btn btn-secondary">Buscar</button>
+    </div>
+</div>
+
+<!-- Contenedor de Tabla -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Marca / Modelo</th>
+            <th>Color</th>
+            <th>Año</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="vehiculos-body">
+        <!-- Ejemplo de fila (Esto se debería llenar dinámicamente con Jinja o JS) -->
+        <!-- Si estás usando Jinja pasando una variable 'vehiculos': -->
+        {% if vehiculos %}
+        {% for v in vehiculos %}
+        <tr>
+            <td>#{{ v.id_vehiculo }}</td>
+            <td><span class="badge badge-placa">{{ v.placa }}</span></td>
+            <td>
+                <div class="vehicle-info">
+                    <strong>{{ v.marca }}</strong>
+                    <small>{{ v.modelo }}</small>
+                </div>
+            </td>
+            <td>
+                <span class="color-dot" style="background-color: {{ v.color|default('#ccc') }};"></span>
+                {{ v.color }}
+            </td>
+            <td>{{ v.anio }}</td>
+            <td class="text-center actions-cell">
+                <a href="/vehiculos/{{ v.id_vehiculo }}" class="btn-icon" title="Ver Detalles">👁️</a>
+                <a href="/vehiculos/update?id={{ v.id_vehiculo }}" class="btn-icon edit" title="Editar">✏️</a>
+                <button onclick="deleteVehiculo({{ v.id_vehiculo }})" class="btn-icon delete" title="Eliminar">🗑️</button>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="6" class="empty-state">
+                No hay vehículos registrados. <a href="/vehiculos/create">¡Registra el primero!</a>
+            </td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Script simple para manejar eliminación (ejemplo)
+    async function deleteVehiculo(id) {
+        if(confirm('¿Estás seguro de eliminar este vehículo?')) {
+            try {
+                const response = await fetch(`/vehiculos/${id}`, { method: 'DELETE' });
+                if(response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Error al eliminar');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error de conexión');
+            }
+        }
+    }
+</script>
+{% endblock %}<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
