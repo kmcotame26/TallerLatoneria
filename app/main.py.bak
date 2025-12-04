@@ -2,9 +2,9 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-
 from .models import Base
 from .database import engine
+from pathlib import Path
 from .routes import (
     usuarios,
     administradores,
@@ -14,22 +14,19 @@ from .routes import (
     facturas,
     taller as taller_routes,
 )
+app = FastAPI()
 
-app = FastAPI(title="API Taller de Latonería y Pintura")
 
 BASE_DIR = Path(__file__).resolve().parent
-
-# Templates & Static
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
+
+BASE_DIR = Path(__file__).resolve().parent
 static_path = BASE_DIR / "static"
-if not static_path.exists():
-    # try project-level static
-    static_path = Path(__file__).resolve().parents[1] / "static"
+
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-# HTML routes
-@app.get("/", response_class=None)
+@app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
@@ -39,7 +36,8 @@ async def vehiculo_form(request: Request):
 
 @app.get("/vehiculos/listar")
 async def vehiculos_listado(request: Request):
-    return templates.TemplateResponse("vehiculos/index.html", {"request": request})
+    return templates.TemplateResponse("vehiculos/listar.html", {"request": request})
+
 
 # Routers API
 app.include_router(usuarios.router)
