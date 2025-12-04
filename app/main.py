@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
+from pathlib import Path
 from .models import Base
 from .database import engine
 from .routes import (
@@ -17,7 +17,11 @@ from .routes import (
 app = FastAPI()
 
 templates = Jinja2Templates(directory="app/templates")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+BASE_DIR = Path(__file__).resolve().parent
+static_path = BASE_DIR / "static"
+
+app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 @app.get("/")
 async def home(request: Request):
