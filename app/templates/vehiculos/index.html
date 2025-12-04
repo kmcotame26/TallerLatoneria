@@ -1,1 +1,93 @@
-{% extends 'base.html' %}{% block content %}<h1>Inicio Taller</h1>{% endblock %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Taller de Latonería</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/">Inicio</a>
+
+        <div class="dropdown">
+            <button class="dropbtn">Vehículos</button>
+            <div class="dropdown-content">
+                <a href="/vehiculos">Ver Vehículos</a>
+                <a href="/vehiculos/create">Registrar Vehículo</a>
+                <a href="/vehiculos/update">Actualizar Vehículo</a>
+                <a href="/vehiculos/delete">Eliminar Vehículo</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Clientes</button>
+            <div class="dropdown-content">
+                <a href="/clientes">Ver Clientes</a>
+                <a href="/clientes/create">Crear Cliente</a>
+                <a href="/clientes/update">Actualizar Cliente</a>
+                <a href="/clientes/delete">Eliminar Cliente</a>
+            </div>
+        </div>
+
+        <a href="/historial">Historial</a>
+        <a href="/informacion">Información</a>
+    </nav>
+
+    {% include 'sidebar.html' %}
+
+    <div class="container">
+        <h1>Bienvenido al <strong>Taller de Latonería</strong></h1>
+
+        <p>Este sistema permite gestionar vehículos, clientes y procesos de reparación de forma eficiente.</p>
+
+        <h2>¿Qué puede hacer este sistema?</h2>
+        <ul>
+            <li><strong>Vehículos:</strong> Registrar autos, actualizar información y gestionar reparaciones.</li>
+            <li><strong>Clientes:</strong> Registrar clientes, actualizar datos y ver historial.</li>
+            <li><strong>Historial:</strong> Visualizar y consultar operaciones realizadas.</li>
+        </ul>
+
+        <h2>Objetivo del proyecto</h2>
+        <p>Este sistema fue desarrollado como parte del proyecto académico para la materia <strong>Desarrollo de Software</strong>.</p>
+
+        <p>Utiliza el menú lateral o la barra superior para navegar entre las secciones.</p>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const body = document.body;
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+            body.classList.toggle('sidebar-open');
+        }
+
+        function toggleSubmenu(element) {
+            element.classList.toggle('active');
+            const submenu = element.nextElementSibling;
+            if (submenu.style.maxHeight) {
+                submenu.style.maxHeight = null;
+            } else {
+                submenu.style.maxHeight = submenu.scrollHeight + "px";
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger-btn');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (!sidebar.contains(event.target) &&
+                !hamburger.contains(event.target) &&
+                sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
+        });
+    </script>
+</body>
+</html>
